@@ -12,10 +12,10 @@ Completed:
 * [x] Required: The destination server is configurable via the `x-destination-url` header
 * [x] Required: Client requests and respones are printed to stdout
 * [x] Required: The `--logfile` argument outputs all logs to the file specified instead of stdout
-* [] Optional: The `--exec` argument proxies stdin/stdout to/from the destination program
-* [] Optional: The `--loglevel` argument sets the logging chattiness
-* [] Optional: Supports HTTPS
-* [] Optional: `-h` argument prints CLI API
+* [ ] Optional: The `--exec` argument proxies stdin/stdout to/from the destination program
+* [ ] Optional: The `--loglevel` argument sets the logging chattiness
+* [ ] Optional: Supports HTTPS
+* [ ] Optional: `-h` argument prints CLI API
 
 Walkthrough Gif:
 [Add walkthrough.gif to the project root]
@@ -47,7 +47,7 @@ curl -v -X POST http://127.0.0.1:8000 -d "hello self" -H "x-asdf: yodawg"
 > x-asdf: yodawg
 > Content-Length: 10
 > Content-Type: application/x-www-form-urlencoded
-> 
+>
 * upload completely sent off: 10 out of 10 bytes
 < HTTP/1.1 200 OK
 < user-agent: curl/7.37.1
@@ -58,7 +58,7 @@ curl -v -X POST http://127.0.0.1:8000 -d "hello self" -H "x-asdf: yodawg"
 < content-type: application/x-www-form-urlencoded
 < Date: Mon, 13 Apr 2015 00:45:50 GMT
 < Connection: keep-alive
-< 
+<
 * Connection #0 to host 127.0.0.1 left intact
 hello self
 ```
@@ -78,7 +78,7 @@ curl -v http://127.0.0.1:8001/asdf -d "hello proxy"
 > Accept: */*
 > Content-Length: 11
 > Content-Type: application/x-www-form-urlencoded
-> 
+>
 * upload completely sent off: 11 out of 11 bytes
 < HTTP/1.1 200 OK
 < user-agent: curl/7.37.1
@@ -88,7 +88,7 @@ curl -v http://127.0.0.1:8001/asdf -d "hello proxy"
 < content-type: application/x-www-form-urlencoded
 < connection: close
 < date: Mon, 13 Apr 2015 02:03:29 GMT
-< 
+<
 * Closing connection 0
 hello proxy
 ```

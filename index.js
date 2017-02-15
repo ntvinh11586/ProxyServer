@@ -7,7 +7,7 @@ let fs = require('fs')
 let map = require('through2-map')
 let argv = require('yargs').argv
 
-let logPath = argv.log && path.join(__dirname, argv.log)
+let logPath = argv.logfile && path.join(__dirname, argv.logfile)
 let logStream = logPath ? fs.createWriteStream(logPath) : process.stdout
 
 let localhost = '127.0.0.1'

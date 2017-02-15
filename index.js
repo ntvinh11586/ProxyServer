@@ -39,18 +39,17 @@ http.createServer((req, res) => {
     method: req.method,
     url: url + req.url
   }
-  console.log(options)
 
   // In your server's request handler, log the incoming request headers
   logStream.write('req.headers ' + JSON.stringify(req.headers) + '\n')
-  // req.pipe(logStream)  // async pipe() function
+  req.pipe(logStream, { end: false })  // async pipe() function
 
   // Log the proxy request headers and content in the **server callback**
   let outboundResponse = request(options)
   req.pipe(outboundResponse)
 
   logStream.write('\n' + 'outboundResponse.headers ' + JSON.stringify(outboundResponse.headers) + '\n')
-  // outboundResponse.pipe(logStream) // async pipe() function
+  outboundResponse.pipe(logStream, { end: false }) // async pipe() function
   outboundResponse.pipe(res)
   // old: req.pipe(request(options)).pipe(res)
 }).listen(8001)

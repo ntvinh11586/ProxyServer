@@ -6,6 +6,7 @@ let path = require('path')
 let fs = require('fs')
 let map = require('through2-map')
 let argv = require('yargs').argv
+let exec = require('child_process').exec
 
 let logPath = argv.logfile && path.join(__dirname, argv.logfile)
 let logStream = logPath ? fs.createWriteStream(logPath) : process.stdout
@@ -15,6 +16,20 @@ let scheme = 'http://'
 let host = argv.host || localhost
 let port = argv.port || (host === localhost ? 8000 : 80)
 let destinationUrl = scheme + host + ':' + port
+
+function executeCLI() {
+  let execCommand = argv.exec
+  if (execCommand) {
+  	execCommand = `${argv.exec} ${argv._.join(' ')}`
+  	exec(execCommand, (err, stdout) => {
+  		if (err) {
+  			console.log ('Oops! Something went wrong!')
+  			return
+  		}
+  		console.log(stdout)
+  	})
+  }
+}
 
 http.createServer((req, res) => {
   console.log(`Request received at: ${req.url}`)
@@ -53,3 +68,5 @@ http.createServer((req, res) => {
   outboundResponse.pipe(res)
   // old: req.pipe(request(options)).pipe(res)
 }).listen(8001)
+
+executeCLI()

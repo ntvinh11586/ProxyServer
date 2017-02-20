@@ -5,7 +5,31 @@ let url = require('url')
 let path = require('path')
 let fs = require('fs')
 let map = require('through2-map')
-let argv = require('yargs').argv
+let argv = require('yargs')
+    .usage('Usage: $0 [options]')
+
+    .alias('p', 'port')
+    .nargs('p', 1)
+    .describe('p', 'Specify a forwarding port')
+
+    .alias('x', 'host')
+    .nargs('x', 1)
+    .describe('x', 'Specify a forwarding host')
+
+    .alias('e', 'exec')
+    .describe('e', 'Specify a process to proxy instead')
+
+    .alias('l', 'log')
+    .nargs('l', 1)
+    .describe('l', 'Specify a output log file')
+
+    .help('h')
+    .alias('h', 'help')
+    .describe('h', 'Show help')
+
+    .epilog('copyright 2017')
+    .argv
+
 let exec = require('child_process').exec
 
 let logPath = argv.logfile && path.join(__dirname, argv.logfile)

@@ -1,4 +1,5 @@
 // "use strict"
+let https = require('https')
 let http = require('http')
 let request = require('request')
 let url = require('url')
@@ -36,10 +37,18 @@ let logPath = argv.logfile && path.join(__dirname, argv.logfile)
 let logStream = logPath ? fs.createWriteStream(logPath) : process.stdout
 
 let localhost = '127.0.0.1'
-let scheme = 'http://'
+let scheme = 'https://'
 let host = argv.host || localhost
 let port = argv.port || (host === localhost ? 8000 : 80)
 let destinationUrl = scheme + host + ':' + port
+
+let options = {
+  key: fs.readFileSync('key.pem'),
+  cert: fs.readFileSync('cert.pem')
+}
+
+// Read more: http://stackoverflow.com/a/21961005/5557789
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 
 function executeCLI() {
   let execCommand = argv.exec
@@ -55,7 +64,7 @@ function executeCLI() {
   }
 }
 
-http.createServer((req, res) => {
+https.createServer(options, (req, res) => {
   console.log(`Request received at: ${req.url}`)
   console.log(req.headers)
   for (let header in req.headers) {
@@ -64,7 +73,7 @@ http.createServer((req, res) => {
   req.pipe(res)
 }).listen(8000)
 
-http.createServer((req, res) => {
+https.createServer(options, (req, res) => {
   console.log(`Proxying request to: ${destinationUrl + req.url}`)
 
   let url = destinationUrl
@@ -78,7 +87,7 @@ http.createServer((req, res) => {
     method: req.method,
     url: url + req.url
   }
-
+  console.log(options)
   // In your server's request handler, log the incoming request headers
   logStream.write('req.headers ' + JSON.stringify(req.headers) + '\n')
   req.pipe(logStream, { end: false })  // async pipe() function

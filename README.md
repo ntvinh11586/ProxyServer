@@ -14,7 +14,7 @@ Completed:
 * [x] Required: The `--logfile` argument outputs all logs to the file specified instead of stdout
 * [x] Optional: The `--exec` argument proxies stdin/stdout to/from the destination program
 * [ ] Optional: The `--loglevel` argument sets the logging chattiness
-* [ ] Optional: Supports HTTPS
+* [x] Optional: Supports HTTPS
 * [x] Optional: `-h` argument prints CLI API
 
 Walkthrough Gif:

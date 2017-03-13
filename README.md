@@ -26,8 +26,29 @@ Note: to embed the gif file, just check your gif file into your repo and update 
 
 ## Starting the Server
 
+### Start node server
 ```bash
-npm start
+nodemon index.js
+nodemon index.js --port=8000
+nodemon index.js --port=8000 --logfile='log.txt'
+```
+
+### Testing Proxy
+```bash
+nodemon index.js --host=google.com
+nodemon index.js --host=google.com --logfile='log.txt'
+```
+
+### Play with HTTP
+```bash
+curl http://localhost:9000/ -d 'hello world' -H 'foo: bar' -v
+curl http://127.0.0.1:9000/ -H 'x-destination-url: 127.0.0.1:8000' -v -d 'hello world'
+
+```
+
+### Play with HTTPS
+```bash
+curl -k https://localhost:8000
 ```
 
 ## Features

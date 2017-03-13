@@ -5,7 +5,7 @@ let request = require('request')
 let url = require('url')
 let path = require('path')
 let fs = require('fs')
-let map = require('through2-map')
+let exec = require('child_process').exec
 let argv = require('yargs')
     .usage('Usage: $0 [options]')
 
@@ -28,41 +28,46 @@ let argv = require('yargs')
     .alias('h', 'help')
     .describe('h', 'Show help')
 
+    .example("node index.js -p 8001 -h google.com")
     .epilog('copyright 2017')
     .argv
 
-let exec = require('child_process').exec
-
-let logPath = argv.logfile && path.join(__dirname, argv.logfile)
-let logStream = logPath ? fs.createWriteStream(logPath) : process.stdout
-
+// Host configure
 let localhost = '127.0.0.1'
 let scheme = 'https://'
 let host = argv.host || localhost
 let port = argv.port || (host === localhost ? 8000 : 80)
 let destinationUrl = scheme + host + ':' + port
 
+// Log configure
+let logPath = argv.logfile && path.join(__dirname, argv.logfile)
+let logStream = logPath ? fs.createWriteStream(logPath) : process.stdout
+
+
 let options = {
   key: fs.readFileSync('key.pem'),
   cert: fs.readFileSync('cert.pem')
 }
 
+// Get risk of unauthorized HTTPS
 // Read more: http://stackoverflow.com/a/21961005/5557789
 process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 
+// Execute
 function executeCLI() {
   let execCommand = argv.exec
   if (execCommand) {
   	execCommand = `${argv.exec} ${argv._.join(' ')}`
   	exec(execCommand, (err, stdout) => {
   		if (err) {
-  			console.log ('Oops! Something went wrong!')
+  			logStream.write('Oops! Something went wrong!')
   			return
   		}
-  		console.log(stdout)
+  		logStream.write(stdout)
   	})
   }
 }
+executeCLI();
 
 https.createServer(options, (req, res) => {
   console.log(`Request received at: ${req.url}`)
@@ -75,19 +80,19 @@ https.createServer(options, (req, res) => {
 
 https.createServer(options, (req, res) => {
   console.log(`Proxying request to: ${destinationUrl + req.url}`)
-
   let url = destinationUrl
   if (req.headers['x-destination-url']) {
     let url = scheme + req.headers['x-destination-url']
   }
 
+  // configure the redirect server (port 8000)
   let options = {
     headers: req.headers,
-    // Use the same HTTP verb
-    method: req.method,
-    url: url + req.url
+    method: req.method, // Use the same HTTP verb
+    url: url + req.url  // default: /
   }
-  console.log(options)
+  console.log("req.url", req.url);
+  console.log("Options", options)
   // In your server's request handler, log the incoming request headers
   logStream.write('req.headers ' + JSON.stringify(req.headers) + '\n')
   req.pipe(logStream, { end: false })  // async pipe() function
@@ -100,6 +105,4 @@ https.createServer(options, (req, res) => {
   outboundResponse.pipe(logStream, { end: false }) // async pipe() function
   outboundResponse.pipe(res)
   // old: req.pipe(request(options)).pipe(res)
-}).listen(8001)
-
-executeCLI()
+}).listen(9000)
